@@ -163,7 +163,10 @@ export default function EditEventPage({ event }) {
       )}
 
       <div>
-        <button onClick={() => setShowModal(true)} className="btn-secondary">
+        <button
+          onClick={() => setShowModal(true)}
+          className="btn-secondary btn-icon"
+        >
           <FaImage /> Set Image
         </button>
       </div>
