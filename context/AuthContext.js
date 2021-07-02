@@ -15,7 +15,26 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Register
-  const register = async () => {};
+  const register = async ({ username, email, password }) => {
+    const res = await fetch(`${NEXT_URL}/api/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setError(null);
+      setUser(data.user);
+      router.push("/account/dashboard");
+    } else {
+      setUser(null);
+      setError(data.message);
+    }
+  };
 
   // Login
   const login = async ({ email: identifier, password }) => {
@@ -63,7 +82,15 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, error, login, logout, checkUserLoggedIn }}
+      value={{
+        user,
+        error,
+        setError,
+        login,
+        register,
+        logout,
+        checkUserLoggedIn,
+      }}
     >
       {children}
     </AuthContext.Provider>
