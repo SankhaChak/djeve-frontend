@@ -15,7 +15,23 @@ export default function LoginPage() {
 
   const handleSubmit = async (ev) => {
     ev.preventDefault();
-    await login({ email, password });
+
+    const user = { email, password };
+
+    const hasEmptyFields = Object.values(user).some((txt) => txt === "");
+
+    if (hasEmptyFields) {
+      return toast.error(`Please fill all the fields`);
+    }
+
+    const emailRegex = /\S+@\S+\.\S+/;
+
+    if (!emailRegex.test(email)) {
+      return toast.error(`Please enter a valid email`);
+    }
+
+    await login(user);
+
     if (error) {
       toast.error(error);
     }

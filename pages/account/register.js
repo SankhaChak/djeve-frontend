@@ -30,6 +30,12 @@ export default function RegisterPage() {
       return toast.error(`Please fill all the fields`);
     }
 
+    const emailRegex = /\S+@\S+\.\S+/;
+
+    if (!emailRegex.test(email)) {
+      return toast.error(`Please enter a valid email`);
+    }
+
     register(user);
 
     error && toast.error(error);
