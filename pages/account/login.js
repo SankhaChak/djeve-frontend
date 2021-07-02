@@ -15,7 +15,10 @@ export default function LoginPage() {
 
   const handleSubmit = async (ev) => {
     ev.preventDefault();
-    login({ email, password });
+    await login({ email, password });
+    if (error) {
+      toast.error(error);
+    }
   };
 
   return (
