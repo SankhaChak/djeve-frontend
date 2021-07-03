@@ -5,6 +5,8 @@ import Image from "next/image";
 import styles from "@/styles/Event.module.css";
 
 export default function EventDetailPage({ event }) {
+  if (!event) return <>Loading...</>;
+
   return (
     <Layout>
       <div className={styles.event}>
