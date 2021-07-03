@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   // Register
   const register = async ({ username, email, password }) => {
+    setError(null);
     const res = await fetch(`${NEXT_URL}/api/register`, {
       method: "POST",
       headers: {
@@ -27,7 +28,6 @@ export const AuthProvider = ({ children }) => {
     const data = await res.json();
 
     if (res.ok) {
-      setError(null);
       setUser(data.user);
       router.push("/account/dashboard");
     } else {
@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }) => {
 
   // Login
   const login = async ({ email: identifier, password }) => {
+    setError(null);
     const res = await fetch(`${NEXT_URL}/api/login`, {
       method: "POST",
       headers: {
@@ -49,7 +50,6 @@ export const AuthProvider = ({ children }) => {
     const data = await res.json();
 
     if (res.ok) {
-      setError(null);
       setUser(data.user);
       router.push("/account/dashboard");
     } else {
@@ -60,10 +60,10 @@ export const AuthProvider = ({ children }) => {
 
   // Logout
   const logout = async () => {
+    setUser(null);
     const res = await fetch(`${NEXT_URL}/api/logout`, { method: "POST" });
 
     if (res.ok) {
-      setUser(null);
       router.push("/");
     }
   };
