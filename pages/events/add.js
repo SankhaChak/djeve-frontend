@@ -4,10 +4,11 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { useState } from "react";
 import { API_URL } from "@/config/index";
+import { parseCookie } from "@/helpers/index";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function AddEventPage() {
+export default function AddEventPage({ token }) {
   const [values, setValues] = useState({
     name: "",
     performers: "",
@@ -34,11 +35,15 @@ export default function AddEventPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(values),
     });
 
     if (!res.ok) {
+      if (res.status === 403 || res.status === 401) {
+        return toast.error(`You're not authorized to add an event!`);
+      }
       toast.error(`Something went wrong! ☹`);
     } else {
       const event = await res.json();
@@ -138,4 +143,14 @@ export default function AddEventPage() {
       </form>
     </Layout>
   );
+}
+
+export async function getServerSideProps({ req }) {
+  const { token } = parseCookie(req);
+
+  return {
+    props: {
+      token,
+    },
+  };
 }

@@ -8,11 +8,12 @@ import moment from "moment";
 import { useState } from "react";
 import { API_URL } from "@/config/index";
 import Image from "next/image";
+import { parseCookie } from "@/helpers/index";
 import { FaImage } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function EditEventPage({ event }) {
+export default function EditEventPage({ event, token }) {
   const [values, setValues] = useState({
     name: event.name,
     performers: event.performers,
@@ -43,11 +44,15 @@ export default function EditEventPage({ event }) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(values),
     });
 
     if (!res.ok) {
+      if (res.status === 403 || res.status === 401) {
+        return toast.error(`You're not authorized to update the event!`);
+      }
       toast.error(`Something went wrong! ☹`);
     } else {
       const event = await res.json();
@@ -59,7 +64,7 @@ export default function EditEventPage({ event }) {
     setValues({ ...values, [target.name]: target.value });
   };
 
-  const imageUploaded = async (ev) => {
+  const imageUploaded = async () => {
     const res = await fetch(`${API_URL}/events/${event.id}`);
     const data = await res.json();
     setImagePreview(data.image.formats.thumbnail.url);
@@ -172,7 +177,11 @@ export default function EditEventPage({ event }) {
       </div>
 
       <Modal show={showModal} onClose={() => setShowModal(false)}>
-        <ImageUpload eventId={event.id} imageUploaded={imageUploaded} />
+        <ImageUpload
+          eventId={event.id}
+          imageUploaded={imageUploaded}
+          token={token}
+        />
       </Modal>
     </Layout>
   );
@@ -182,7 +191,9 @@ export async function getServerSideProps({ params: { id }, req }) {
   const res = await fetch(`${API_URL}/events/${id}`);
   const event = await res.json();
 
+  const { token } = parseCookie(req);
+
   return {
-    props: { event },
+    props: { event, token },
   };
 }
